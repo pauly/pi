@@ -81,7 +81,7 @@ var gauge, gauge_data, gauge_options;
 google.load( 'visualization', '1.0', { packages: [ 'corechart', 'gauge' ] } );
 google.setOnLoadCallback( function () {
 	gauge = new google.visualization.Gauge( document.getElementById( 'gauge_div' ));
-	gauge_data = google.visualization.arrayToDataTable( [ ["Label", "Value"], ["Free space", <?php echo $match[1]; ?>] ] );
+	gauge_data = google.visualization.arrayToDataTable( [ ["Label", "Value"], ["Disk %", <?php echo $match[1]; ?>] ] );
 	gauge_options = {
 		width: '200',
 		height: '200',
