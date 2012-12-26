@@ -1,0 +1,3 @@
+my raspberry pi home web server
+
+If you can see this when you go to http://pi.clarkeology.com in the web browser then I've started apache instead of nginx by mistake!
