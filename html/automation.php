@@ -34,14 +34,13 @@ switch ( $_GET['device'] ) {
     $_GET['device'] = 'D1';
 }
 
-// $obj->{'_GET'} = $_GET;
 $obj->{'host'} = '192.168.0.14';
 $obj->{'port'} = 9760;
 $sock = socket_create( AF_INET, SOCK_DGRAM, SOL_UDP );
-$obj->{'socket'} = print_r( $sock, true );
 $code = 533;
 $obj->{'broadcast_string'} = sprintf( '%03d', $code ) . ',!' . $_GET['room'] . $_GET['device'] . $_GET['state'] . '|';
-socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+$obj->usage = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?room=2&device=1&state=on";
+socket_set_option( $sock, SOL_SOCKET, SO_BROADCAST, 1 );
 socket_sendto( $sock, $obj->{'broadcast_string'}, strlen( $obj->{'broadcast_string'} ), 0, $obj->{'host'}, $obj->{'port'} );
 socket_close( $sock );
 

@@ -1,6 +1,7 @@
 <?php
   $output = array( );
   $match = array( );
+  $ustream = json_decode( file_get_contents( 'http://api.ustream.tv/json/channel/paulypopex/getValueOf/status?key=4C8C8AA9814C796A8C908D1E6315FAE7' ));
 ?><!doctype html>
 <html>
 <head>
@@ -18,8 +19,8 @@
   </div>
   <div class="row">
     <div class="col content gbbs">
-      <h2><a class="source">Paul TV</a></h2>
-      <p class="source" style="display: none"><iframe width="720" height="437" src="http://www.ustream.tv/embed/12921939?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
+      <h2><a class="source">Paul TV (<?php echo $ustream->results; ?>)</a></h2>
+      <p class="source"<?php echo $ustream->results == 'offline' ? ' style="display: none"' : '' ?>><iframe width="720" height="437" src="http://www.ustream.tv/embed/12921939?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
       <br /><a href="http://www.ustream.tv/">Live broadcast by Ustream</a>, enabled occasionally so I can demo my <a href="http://www.clarkeology.com/wiki/home+automation">home automation</a> things.</p>
       <h2><a class="source">Disk space</a></h2>
       <pre class="source" style="display: none"><?php
