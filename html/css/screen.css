@@ -6,6 +6,7 @@ body {
 }
 a {
 	color: #06f;
+  font-style: underline;
 }
 h1, h2, h3 {
 	font-size: 1em;
