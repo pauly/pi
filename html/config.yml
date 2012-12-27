@@ -1,8 +1,11 @@
-ours:
-  - light
-  - lights
-  - kettle
-  - tv
-diner:
-  - light
-  - lights
+host:
+  192.168.0.14
+room:
+  our:
+    - light
+    - lights
+    - kettle
+    - tv
+  dining:
+    - light
+    - lights
