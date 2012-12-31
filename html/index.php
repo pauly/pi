@@ -1,4 +1,6 @@
 <?php
+  ini_set( 'display_errors', 'On' );
+  error_reporting( E_ALL );
   $output = array( );
   $match = array( );
   $ustream = json_decode( file_get_contents( 'http://api.ustream.tv/json/channel/paulypopex/getValueOf/status?key=4C8C8AA9814C796A8C908D1E6315FAE7' ));
@@ -11,6 +13,7 @@
   <link rel="stylesheet" href="/css/grid.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/screen.css">
+  <link rel="stylesheet" href="/css/home_automation_stats.css">
 </head>
 <body>
 <div class="container">
@@ -19,38 +22,47 @@
   </div>
   <div class="row">
     <div class="col content gbbs">
-      <h2><a class="source">Paul TV (<?php echo $ustream->results; ?>)</a></h2>
-      <p class="source"<?php echo $ustream->results == 'offline' ? ' style="display: none"' : '' ?>><iframe width="720" height="437" src="http://www.ustream.tv/embed/12921939?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
-      <br /><a href="http://www.ustream.tv/">Live broadcast by Ustream</a>, enabled occasionally so I can demo my <a href="http://www.clarkeology.com/wiki/home+automation">home automation</a> things.</p>
-      <h2><a class="source">Disk space</a></h2>
-      <pre class="source" style="display: none"><?php
-        unset( $output );
-        exec( 'df', $output );
-        $data = implode( "\n", $output );
-        preg_match( '/(\d+)\%/', $data, $match );
-        echo $data;
-      ?></pre>
-      <h2><a class="source">Connected</a></h2>
-      <pre class="source" style="display: none"><?php unset( $output ); exec( 'lsusb', $output ); echo implode( "\n", $output ); ?></pre>
-      <h2><a class="source">Network</a></h2>
-      <pre class="source" style="display: none"><?php unset( $output ); exec( 'arp | cut -c1-30', $output ); echo implode( "\n", $output ); ?></pre>
-      <h2>Uptime</h2>
-      <pre><?php echo exec('uptime'); ?></pre>
-
-      <!-- <div class="row">
-        <div class="col">
-          <h4>Feature Block One</h4>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et m. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-        </div>
-
-        <div class="col">
-          <h4>Feature Block Two</h4>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et m. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-        </div>
-      </div> -->
-
-      <!-- <h3>And One Last Thing</h3>
-      <p>Cum sociis natoque penatibus et m. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et m. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p> -->
+      <dl>
+        <dt><a>Home Automation</a></dt>
+        <dd>
+          <p>Securing this one soon, just here for fun! See my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a>.</p>
+          <div id="energy_chart"></div>
+          <p>Rooms and devices:</p>
+          <dl>
+            <?php
+              // echo 'My config for my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a>:';
+              $json = exec( '/usr/local/bin/lightwaverf-config-json' );
+              $config = json_decode( $json, true );
+              foreach ( $config['room'] as $name => $devices ) {
+                echo '<dt><a>' . $name . '</a></dt>';
+                echo '<dd style="display: none"><dl>';
+                foreach ( $devices as $device ) {
+                  echo '<dt><a>' . $device . '</a></dt>';
+                  echo '<dd style="display: none">In theory you could be turning ' . $name . ' ' . $device . ' on or off by clicking here!</dd>';
+                }
+                echo '</dl></dd>';
+              }
+            ?>
+          </dl>
+        </dd>
+        <dt><a>Paul TV (<?php echo $ustream->results; ?>)</a></dt>
+        <dd<?php echo $ustream->results == 'offline' ? ' style="display: none"' : '' ?>><iframe width="720" height="437" src="http://www.ustream.tv/embed/12921939?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
+        <br /><a href="http://www.ustream.tv/">Live broadcast by Ustream</a>, enabled occasionally so I can demo my <a href="http://www.clarkeology.com/wiki/home+automation">home automation</a> things.</dd>
+        <dt><a>Disk space</a></dt>
+        <dd style="display: none"><?php
+          unset( $output );
+          exec( 'df', $output );
+          $data = implode( "\n", $output );
+          preg_match( '/(\d+)\%/', $data, $match );
+          echo $data;
+        ?></dd>
+        <dt><a>Connected</a></dt>
+        <dd style="display: none"><?php unset( $output ); exec( 'lsusb', $output ); echo implode( "\n", $output ); ?></dd>
+        <dt><a>Network</a></dt>
+        <dd style="display: none"><?php unset( $output ); exec( 'arp | cut -c1-30', $output ); echo implode( "\n", $output ); ?></dd>
+        <dt>Uptime</dt>
+        <dd><?php echo exec('uptime'); ?></dd>
+      </dl>
     </div>
 
     <div class="col sidebar">
@@ -84,7 +96,7 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 var gauge, gauge_data, gauge_options;
-google.load( 'visualization', '1.0', { packages: [ 'corechart', 'gauge' ] } );
+google.load( 'visualization', '1.0', { packages: [ 'corechart', 'gauge', 'annotatedtimeline' ] } );
 google.setOnLoadCallback( function ( ) {
   gauge = new google.visualization.Gauge( document.getElementById( 'gauge_div' ));
   gauge_data = google.visualization.arrayToDataTable( [ ["Label", "Value"], ["Disk %", <?php echo $match[1]; ?>] ] );
@@ -98,11 +110,20 @@ google.setOnLoadCallback( function ( ) {
     minorTicks: 5
   };
   gauge.draw( gauge_data, gauge_options );
+  var energy_data = new google.visualization.DataTable( );
+  energy_data.addColumn( 'date', 'Date' );
+  energy_data.addColumn( 'number', 'Electricity used' );
+  energy_data.addColumn( 'string', 'title1' );
+  energy_data.addColumn( 'string', 'text1' );
+  energy_data.addRows( <?php
+    echo file_get_contents( '/home/pi/lightwaverf-summary.json' );
+  ?> );
+  var chart = new google.visualization.AnnotatedTimeLine( document.getElementById( 'energy_chart' ));
+  chart.draw( energy_data, { displayAnnotations: true, title: '24 hours electricity usage' } );
 } );
 $( function ( ) {
-  $('a.source').click( function ( ) {
-    // $(this).parent('p').hide( );
-    $(this).parent( ).next('.source').slideDown( );
+  $('dt a').click( function ( ) {
+    $(this).parent( ).next('dd').slideDown( );
   } );
 } );
 </script>
