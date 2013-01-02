@@ -115,9 +115,42 @@ google.setOnLoadCallback( function ( ) {
   energy_data.addColumn( 'number', 'Electricity used' );
   energy_data.addColumn( 'string', 'title1' );
   energy_data.addColumn( 'string', 'text1' );
+  if (!Array.prototype.map) {
+    Array.prototype.map = function(callback, thisArg) {
+      var T, A, k;
+      if (this == null) {
+        throw new TypeError(" this is null or not defined");
+      }
+      var O = Object(this);
+      var len = O.length >>> 0;
+      if (typeof callback !== "function") {
+        throw new TypeError(callback + " is not a function");
+      }
+      if (thisArg) {
+        T = thisArg;
+      }
+      A = new Array(len);
+      k = 0;
+      while(k < len) {
+        var kValue, mappedValue;
+        if (k in O) {
+          kValue = O[ k ];
+          mappedValue = callback.call(T, kValue, k, O);
+          A[ k ] = mappedValue;
+        }
+        k++;
+      }
+      return A;
+    };      
+  }
   energy_data.addRows( <?php
     echo file_get_contents( '/home/pi/lightwaverf-summary.json' );
-  ?> );
+  ?>.map( function ( e ) {
+    e[0] = new Date(e[0]);
+    e[2] = e[2] || '';
+    e[3] = e[3] || '';
+    return e;
+  } ));
   var chart = new google.visualization.AnnotatedTimeLine( document.getElementById( 'energy_chart' ));
   chart.draw( energy_data, { displayAnnotations: true, title: '24 hours electricity usage' } );
 } );
