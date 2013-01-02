@@ -23,6 +23,8 @@
   <div class="row">
     <div class="col content gbbs">
       <dl>
+        <dt>This is my raspberry pi homepage.</dt>
+        <dd>This site is hosted on my raspberry pi, from my house. So it may be slow, or unavailable at any time.</dd>
         <dt><a>Home Automation</a></dt>
         <dd>
           <p>Securing this one soon, just here for fun! See my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a>.</p>
@@ -49,7 +51,7 @@
         <dd<?php echo $ustream->results == 'offline' ? ' style="display: none"' : '' ?>><iframe width="720" height="437" src="http://www.ustream.tv/embed/12921939?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
         <br /><a href="http://www.ustream.tv/">Live broadcast by Ustream</a>, enabled occasionally so I can demo my <a href="http://www.clarkeology.com/wiki/home+automation">home automation</a> things.</dd>
         <dt><a>Disk space</a></dt>
-        <dd style="display: none"><?php
+        <dd style="display: none"><pre><?php
           unset( $output );
           exec( 'df', $output );
           $data = implode( "\n", $output );
@@ -57,9 +59,9 @@
           echo $data;
         ?></dd>
         <dt><a>Connected</a></dt>
-        <dd style="display: none"><?php unset( $output ); exec( 'lsusb', $output ); echo implode( "\n", $output ); ?></dd>
+        <dd style="display: none"><pre><?php unset( $output ); exec( 'lsusb', $output ); echo implode( "\n", $output ); ?></pre></dd>
         <dt><a>Network</a></dt>
-        <dd style="display: none"><?php unset( $output ); exec( 'arp | cut -c1-30', $output ); echo implode( "\n", $output ); ?></dd>
+        <dd style="display: none"><pre><?php unset( $output ); exec( 'arp | cut -c1-30', $output ); echo implode( "\n", $output ); ?></pre></dd>
         <dt>Uptime</dt>
         <dd><?php echo exec('uptime'); ?></dd>
       </dl>
@@ -98,18 +100,6 @@
 var gauge, gauge_data, gauge_options;
 google.load( 'visualization', '1.0', { packages: [ 'corechart', 'gauge', 'annotatedtimeline' ] } );
 google.setOnLoadCallback( function ( ) {
-  gauge = new google.visualization.Gauge( document.getElementById( 'gauge_div' ));
-  gauge_data = google.visualization.arrayToDataTable( [ ["Label", "Value"], ["Disk %", <?php echo $match[1]; ?>] ] );
-  gauge_options = {
-    width: '200',
-    height: '200',
-    redFrom: 90,
-    redTo: 100,
-    yellowFrom: 75,
-    yellowTo: 90,
-    minorTicks: 5
-  };
-  gauge.draw( gauge_data, gauge_options );
   var energy_data = new google.visualization.DataTable( );
   energy_data.addColumn( 'date', 'Date' );
   energy_data.addColumn( 'number', 'Electricity used' );
@@ -143,16 +133,33 @@ google.setOnLoadCallback( function ( ) {
       return A;
     };      
   }
-  energy_data.addRows( <?php
+  var raw_data = <?php
     echo file_get_contents( '/home/pi/lightwaverf-summary.json' );
-  ?>.map( function ( e ) {
-    e[0] = new Date(e[0]);
+  ?>;
+  energy_data.addRows( raw_data.map( function ( e ) {
+    var d = '' + e[0];
+    e[0] = new Date( '20' + d[0] + d[1] + '-' + d[2] + d[3] + '-' + d[4] + d[5] + ' ' + d[6] + d[7] + ':' + d[8] + d[9] );
+    e[1] = e[1] * 10;
     e[2] = e[2] || '';
     e[3] = e[3] || '';
     return e;
   } ));
   var chart = new google.visualization.AnnotatedTimeLine( document.getElementById( 'energy_chart' ));
   chart.draw( energy_data, { displayAnnotations: true, title: '24 hours electricity usage' } );
+
+  gauge = new google.visualization.Gauge( document.getElementById( 'gauge_div' ));
+  gauge_data = google.visualization.arrayToDataTable( [ ["Label", "Value"], ["Electric", raw_data.pop[1] ], ["Pi Disk %", <?php echo $match[1]; ?>] ] );
+  gauge_options = {
+    width: '200',
+    height: '200',
+    redFrom: 90,
+    redTo: 100,
+    yellowFrom: 75,
+    yellowTo: 90,
+    minorTicks: 5
+  };
+  gauge.draw( gauge_data, gauge_options );
+
 } );
 $( function ( ) {
   $('dt a').click( function ( ) {
