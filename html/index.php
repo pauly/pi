@@ -23,16 +23,15 @@
   <div class="row">
     <div class="col content gbbs">
       <dl>
-        <dt>This is my raspberry pi homepage.</dt>
-        <dd>This site is hosted on my raspberry pi, from my house. So it may be slow, or unavailable at any time.</dd>
+        <dt>This is my <a href="http://amzn.to/Xm9XJ7">raspberry pi</a> homepage.</dt>
+        <dd>This site is hosted on my <a href="http://amzn.to/Xm9XJ7">raspberry pi</a>, from my house. So it may be slow, or unavailable at any time.</dd>
         <dt><a>Home Automation</a></dt>
         <dd>
-          <p>Securing this one soon, just here for fun! See my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a>.</p>
+          <p>Securing this one soon, just here for fun! See my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a> (just <a href="https://rubygems.org/gems/lightwaverf">gem install lightwaverf</a>), get a <a href="http://amzn.to/V7yPPK">wifi link</a> and <a href="http://amzn.to/RkukDo">remote socket</a> and you're good to go...</p>
           <div id="energy_chart"></div>
           <p>Rooms and devices:</p>
           <dl>
             <?php
-              // echo 'My config for my <a href="https://github.com/pauly/lightwaverf">lightwaverf gem</a>:';
               $json = exec( '/usr/local/bin/lightwaverf-config-json' );
               $config = json_decode( $json, true );
               foreach ( $config['room'] as $name => $devices ) {
@@ -40,7 +39,11 @@
                 echo '<dd style="display: none"><dl>';
                 foreach ( $devices as $device ) {
                   echo '<dt><a>' . $device . '</a></dt>';
-                  echo '<dd style="display: none">In theory you could be turning ' . $name . ' ' . $device . ' on or off by clicking here!</dd>';
+                  echo '<dd style="display: none">In theory you could be turning ' . $name . ' ' . $device . ' ';
+                  echo '<a class="ajax" href="/automation/' . $name . '/' . $device . '/on">on</a>';
+                  echo ' or ';
+                  echo '<a class="ajax" href="/automation/' . $name . '/' . $device . '/off">off</a>';
+                  echo ' here!</dd>';
                 }
                 echo '</dl></dd>';
               }
@@ -76,6 +79,8 @@
         </div>
 
         <div class="col">
+          <iframe src="http://rcm-uk.amazon.co.uk/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=clarkeology-21&o=2&p=8&l=as4&m=amazon&f=ifr&ref=ss_til&asins=B009SMWSQA" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
           <h4>Links</h4>
           <ul class="vcard">
             <li><a rel="me" class="url fn n uid" href="http://www.clarkeology.com/blog/" title="All about Pauly">Paul Clarke</a><img class="photo" src="https://lh6.googleusercontent.com/-9R7Y6Un9q4M/ULyp458SI_I/AAAAAAABWcg/Uxou54FYA4c/s288/Screen%2520shot%25202012-12-03%2520at%252013.30.38.png" style="display: none" width="218" height="291" /></li>
@@ -164,6 +169,13 @@ google.setOnLoadCallback( function ( ) {
 $( function ( ) {
   $('dt a').click( function ( ) {
     $(this).parent( ).next('dd').slideDown( );
+  } );
+  $('a.ajax').click( function ( ) {
+    $a = $(this);
+    $.get( $a.attr('href'), function ( js ) {
+      alert( $a.text( ));
+    } );
+    return false;
   } );
 } );
 </script>
